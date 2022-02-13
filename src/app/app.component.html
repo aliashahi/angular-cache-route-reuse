@@ -2,7 +2,10 @@
   <header class="header">
     <ul *ngFor="let item of cacheSrv.getTabs">
       <li class="tab">
-        {{ item.title }}
+        <a [routerLink]="['/' + item.route]">
+          {{ item.title }}
+        </a>
+        <a class="close-btn" (click)="onCloseBtn(item)">X</a>
       </li>
     </ul>
   </header>
