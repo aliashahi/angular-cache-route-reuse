@@ -4,6 +4,7 @@ import { ModuleBChildBComponent } from './module-bchild-b/module-bchild-b.compon
 import { ModuleBChildAComponent } from './module-bchild-a/module-bchild-a.component';
 import { RouterModule, Routes } from '@angular/router';
 import { ModuleBContainer } from './module-b.container';
+import { ModuleBChildBDetailComponent } from './module-bchild-b/module-bchild-bdetail/module-bchild-bdetail.component';
 
 const routes: Routes = [
   {
@@ -13,10 +14,23 @@ const routes: Routes = [
       {
         path: 'child-a',
         component: ModuleBChildAComponent,
+        data: {
+          title: 'Module B : Child A',
+        },
       },
       {
         path: 'child-b',
         component: ModuleBChildBComponent,
+        data: {
+          title: 'Module B : Child B',
+        },
+      },
+      {
+        path: 'child-b/:id',
+        component: ModuleBChildBDetailComponent,
+        data: {
+          title: 'Module B : Child B item',
+        },
       },
       {
         path: '**',
@@ -35,6 +49,7 @@ const routes: Routes = [
     ModuleBContainer,
     ModuleBChildBComponent,
     ModuleBChildAComponent,
+    ModuleBChildBDetailComponent,
   ],
   imports: [CommonModule, RouterModule.forChild(routes)],
 })

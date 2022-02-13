@@ -9,7 +9,10 @@ export class ModuleBChildBComponent implements OnInit {
 
   constructor() { }
 
+  public loadDate: string = 'not set';
   ngOnInit(): void {
+    let d = new Date();
+    this.loadDate = `${d.getHours()}:${d.getMinutes()}':${d.getSeconds()}"`;
   }
 
 }

@@ -1,27 +1,37 @@
 <div class="container">
-  <ul>
-    <li>
-      <a [routerLink]="['/module-a/child-a']" routerLinkActive="active-link"
-        >module-a -> child-a</a
-      >
+  <header class="header">
+    <ul *ngFor="let item of cacheSrv.getTabs">
+      <li class="tab">
+        {{ item.title }}
+      </li>
+    </ul>
+  </header>
+  <div class="main">
+    <ul>
+      <p>{{ loadDate }}</p>
+      <li>
+        <a [routerLink]="['/module-a/child-a']" routerLinkActive="active-link"
+          >module-a -> child-a</a
+        >
+      </li>
+      <li>
+        <a [routerLink]="['/module-a/child-b']" routerLinkActive="active-link"
+          >module-a -> child-b</a
+        >
+      </li>
+      <li>
+        <a [routerLink]="['/module-b/child-a']" routerLinkActive="active-link"
+          >module-b -> child-a</a
+        >
+      </li>
+      <li>
+        <a [routerLink]="['/module-b/child-b/1']" routerLinkActive="active-link"
+          >module-b -> child-b/1</a
+        >
+      </li>
+    </ul>
+    <li class="content">
+      <router-outlet></router-outlet>
     </li>
-    <li>
-      <a [routerLink]="['/module-a/child-b']" routerLinkActive="active-link"
-        >module-a -> child-b</a
-      >
-    </li>
-    <li>
-      <a [routerLink]="['/module-b/child-a']" routerLinkActive="active-link"
-        >module-b -> child-a</a
-      >
-    </li>
-    <li>
-      <a [routerLink]="['/module-b/child-b']" routerLinkActive="active-link"
-        >module-b -> child-b</a
-      >
-    </li>
-  </ul>
-  <li class="content">
-    <router-outlet></router-outlet>
-  </li>
+  </div>
 </div>
