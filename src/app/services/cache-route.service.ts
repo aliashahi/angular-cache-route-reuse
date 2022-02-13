@@ -36,14 +36,14 @@ export class CacheRouteReuseStrategy implements RouteReuseStrategy {
       return;
     }
 
-    const previousStored = this.routeCache.get(key.key);
+    const previousStored = this.routeCache.get(key);
     if (previousStored) {
       if (!(previousStored.handle.componentRef === detachedTree.componentRef)) {
         previousStored.handle.componentRef.destroy();
       }
     }
 
-    this.routeCache.set(key.key, {
+    this.routeCache.set(key, {
       handle: detachedTree,
       shouldAttachCalled: false,
     });
@@ -54,9 +54,9 @@ export class CacheRouteReuseStrategy implements RouteReuseStrategy {
     if (route.data['title']) {
       let title = route.data['title'];
       if (route.params['id']) title += route.params['id'];
-      this.cacheService.saveRoute(key.url, title);
+      this.cacheService.saveRoute(key, title);
     }
-    const stored = this.routeCache.get(key.key);
+    const stored = this.routeCache.get(key);
     const destroyed = !!(
       stored && stored.handle.componentRef.hostView.destroyed
     );
@@ -70,7 +70,7 @@ export class CacheRouteReuseStrategy implements RouteReuseStrategy {
 
   retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandleExt | null {
     const key = this.getSnapshotKey(route);
-    const stored = this.routeCache.get(key.key);
+    const stored = this.routeCache.get(key);
     const destroyed = !!(
       stored && stored.handle.componentRef.hostView.destroyed
     );
@@ -79,7 +79,7 @@ export class CacheRouteReuseStrategy implements RouteReuseStrategy {
       !destroyed && !!stored && stored.shouldAttachCalled;
 
     if (destroyed) {
-      this.routeCache.delete(key.key);
+      this.routeCache.delete(key);
     }
 
     if (shouldBeRetrieved) {
@@ -104,21 +104,37 @@ export class CacheRouteReuseStrategy implements RouteReuseStrategy {
   ): boolean {
     const result =
       future.routeConfig === curr.routeConfig &&
-      !(this.getSnapshotKey(future).url == this.getSnapshotKey(curr).url); // from DefaultRouteReuseStrategy
+      !(this.getSnapshotKey(future) == this.getSnapshotKey(curr)); // from DefaultRouteReuseStrategy
+    if (!result) this.deleteClosedTabs();
     return result;
   }
 
-  private getSnapshotKey(snapshot: ActivatedRouteSnapshot): {
-    url: string;
-    key: string;
-  } {
-    return {
-      key: snapshot.pathFromRoot.join('->'),
-      url: snapshot.pathFromRoot
-        .map((v) => v.url.map((segment) => segment.toString()).join('/'))
-        .filter((url) => !!url)
-        .join('/'),
-    };
+  private deleteClosedTabs() {
+    let historyList = this.cacheService.getTabs;
+    if (!historyList) historyList = [];
+    let urls: string[] = historyList.map((i) => i.route);
+    this.routeCache.forEach((_, key) => {
+      let removeCache = true;
+      for (let i = 0; i < urls.length; i++) {
+        if (urls[i] === key) {
+          removeCache = false;
+          break;
+        }
+      }
+      if (removeCache) this.destroyComponent(key);
+    });
+  }
+
+  private destroyComponent(element: string) {
+    const el = this.routeCache.get(element);
+    this.routeCache.delete(element);
+  }
+
+  private getSnapshotKey(snapshot: ActivatedRouteSnapshot): string {
+    return snapshot.pathFromRoot
+      .map((v) => v.url.map((segment) => segment.toString()).join('/'))
+      .filter((url) => !!url)
+      .join('/');
   }
 
   private isToBeReused(route: ActivatedRouteSnapshot, msg: string) {
